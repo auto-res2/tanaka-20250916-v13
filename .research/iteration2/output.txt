@@ -1,0 +1,14 @@
+=== [PHASE 2/2] Full experiment start Tue Sep 16 10:54:55 AM UTC 2025 ===
+
+============================================================
+STARTING FULL EXPERIMENT EXPERIMENT
+============================================================
+Loaded configuration from: config/full_experiment.yaml
+Experiment: lace_plus_plus_full_experiment
+Dataset: imagenet64
+Epochs: 100
+Batch size: 128
+
+Loading datasets...
+
+Error during experiment: Unknown split "test". Should be one of ['train'].
