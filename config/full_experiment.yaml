@@ -1,0 +1,29 @@
+experiment_name: "lace_plus_plus_full_experiment"
+dataset: "imagenet64"  # Use ImageNet-64 for full experiment
+batch_size: 128
+epochs: 100
+max_images: 400000000  # 400M images as specified
+validation_split: 0.05
+
+model:
+  unet_channels: 256
+  timesteps: 1000
+  
+lace:
+  projector_dim: 128
+  critic_lr: 0.0002
+  lambda_d: 1.0
+  gamma_energy: 0.3
+  meta_interval: 1000
+  K_bins: 100
+  S_strata: 10
+  warmup_steps: 12000000
+
+output_dir: ".research/iteration2"
+save_images: true
+save_json: true
+
+optimizer:
+  lr: 0.0001
+  weight_decay: 0.0001
+  betas: [0.9, 0.999]

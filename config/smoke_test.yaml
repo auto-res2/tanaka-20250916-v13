@@ -1,0 +1,28 @@
+experiment_name: "lace_plus_plus_smoke_test"
+dataset: "cifar10"  # Use CIFAR-10 for quick testing
+batch_size: 32
+epochs: 2
+max_images: 10000
+validation_split: 0.1
+
+model:
+  unet_channels: 64  # Reduced for smoke test
+  timesteps: 100     # Reduced from 1000
+  
+lace:
+  projector_dim: 128
+  critic_lr: 0.0001
+  lambda_d: 0.5
+  gamma_energy: 0.1
+  meta_interval: 100
+  K_bins: 10
+  S_strata: 5
+
+output_dir: ".research/iteration2"
+save_images: true
+save_json: true
+
+optimizer:
+  lr: 0.0001
+  weight_decay: 0.0001
+  betas: [0.9, 0.999]

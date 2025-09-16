@@ -1,0 +1,23 @@
+[project]
+name = "lace-plus-plus"
+version = "0.1.0"
+description = "LACE++ - Lifelong Adaptive Critic & Curriculum for Efficient-and-Fair Diffusion Training"
+dependencies = [
+    "torch>=1.9.0",
+    "torchvision>=0.10.0", 
+    "transformers>=4.20.0",
+    "datasets>=2.0.0",
+    "timm>=0.6.0",
+    "open_clip_torch>=2.0.0",
+    "pillow>=8.0.0",
+    "requests>=2.25.0",
+    "numpy>=1.21.0",
+    "matplotlib>=3.5.0",
+    "pyyaml>=6.0",
+    "scipy>=1.7.0",
+    "scikit-learn>=1.0.0"
+]
+
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
