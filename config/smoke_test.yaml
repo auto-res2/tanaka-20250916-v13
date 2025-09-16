@@ -18,7 +18,7 @@ lace:
   K_bins: 10
   S_strata: 5
 
-output_dir: ".research/iteration3"
+output_dir: ".research/iteration4"
 save_images: true
 save_json: true
 

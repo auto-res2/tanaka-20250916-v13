@@ -19,7 +19,7 @@ lace:
   S_strata: 10
   warmup_steps: 12000000
 
-output_dir: ".research/iteration3"
+output_dir: ".research/iteration4"
 save_images: true
 save_json: true
 
