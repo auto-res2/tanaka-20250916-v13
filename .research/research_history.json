@@ -3,5 +3,19 @@
   "queries": [
     "diffusion loss improvement",
     "denoising diffusion optimization"
+  ],
+  "research_study_list": [
+    {
+      "title": "Analyzing and Improving the Training Dynamics of Diffusion Models"
+    },
+    {
+      "title": "Analyzing and Improving the Training Dynamics of Diffusion Models"
+    },
+    {
+      "title": "Diffusion Models for Black-Box Optimization"
+    },
+    {
+      "title": "Diffusion Models as Plug-and-Play Priors"
+    }
   ]
 }
