@@ -60,8 +60,13 @@ def create_dataloader(config, split='train'):
     batch_size = config['batch_size']
     max_samples = config.get('max_images') if split == 'train' else None
     
+    actual_split = split
+    if dataset_name == 'imagenet64' and split == 'test':
+        actual_split = 'train'  # Use train split for validation when test doesn't exist
+        max_samples = 10000  # Limit samples for validation
+    
     transform = get_transforms(dataset_name)
-    dataset = DiffusionDataset(dataset_name, split=split, transform=transform, max_samples=max_samples)
+    dataset = DiffusionDataset(dataset_name, split=actual_split, transform=transform, max_samples=max_samples)
     
     dataloader = DataLoader(
         dataset,
