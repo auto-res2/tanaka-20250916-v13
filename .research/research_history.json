@@ -122,7 +122,594 @@
         "ImageNet-64",
         "CelebA-HQ-64",
         "CIFAR-10"
-      ]
+      ],
+      "external_resources": {
+        "hugging_face": {
+          "models": [
+            {
+              "id": "openai/clip-vit-base-patch16",
+              "author": "openai",
+              "sha": "57c216476eefef5ab752ec549e440a49ae4ae5f3",
+              "created_at": "2022-03-02T23:29:05+00:00",
+              "last_modified": "2022-10-04T09:42:28+00:00",
+              "private": false,
+              "gated": false,
+              "disabled": false,
+              "downloads": 2301842,
+              "likes": 135,
+              "siblings": [
+                {
+                  "rfilename": ".gitattributes"
+                },
+                {
+                  "rfilename": "README.md"
+                },
+                {
+                  "rfilename": "config.json"
+                },
+                {
+                  "rfilename": "flax_model.msgpack"
+                },
+                {
+                  "rfilename": "merges.txt"
+                },
+                {
+                  "rfilename": "preprocessor_config.json"
+                },
+                {
+                  "rfilename": "pytorch_model.bin"
+                },
+                {
+                  "rfilename": "special_tokens_map.json"
+                },
+                {
+                  "rfilename": "tokenizer.json"
+                },
+                {
+                  "rfilename": "tokenizer_config.json"
+                }
+              ],
+              "card_data": {
+                "language": [],
+                "tags": [
+                  "vision"
+                ],
+                "datasets": [],
+                "task_categories": [],
+                "size_categories": [],
+                "metrics": [],
+                "widget": [
+                  {
+                    "src": "https://huggingface.co/datasets/mishig/sample_images/resolve/main/cat-dog-music.png",
+                    "candidate_labels": "playing music, playing sports",
+                    "example_title": "Cat & Dog"
+                  }
+                ]
+              },
+              "tags": [
+                "transformers",
+                "pytorch",
+                "jax",
+                "clip",
+                "zero-shot-image-classification",
+                "vision",
+                "arxiv:2103.00020",
+                "arxiv:1908.04913",
+                "endpoints_compatible",
+                "region:us"
+              ],
+              "pipeline_tag": "zero-shot-image-classification",
+              "library_name": "transformers",
+              "readme": "---\ntags:\n- vision\nwidget:\n- src: https://huggingface.co/datasets/mishig/sample_images/resolve/main/cat-dog-music.png\n  candidate_labels: playing music, playing sports\n  example_title: Cat & Dog\n---\n# Model Card: CLIP\nDisclaimer: The model card is taken and modified from the official CLIP repository, it can be found [here](https://github.com/openai/CLIP/blob/main/model-card.md).\n\n\n## Model Details\nThe CLIP model was developed by researchers at OpenAI to learn about what contributes to robustness in computer vision tasks. The model was also developed to test the ability of models to generalize to arbitrary image classification tasks in a zero-shot manner. It was not developed for general model deployment - to deploy models like CLIP, researchers will first need to carefully study their capabilities in relation to the specific context they’re being deployed within.\n\n\n### Model Date\nJanuary 2021\n\n\n### Model Type\nThe base model uses a ViT-B/16 Transformer architecture as an image encoder and uses a masked self-attention Transformer as a text encoder. These encoders are trained to maximize the similarity of (image, text) pairs via a contrastive loss.\n\nThe original implementation had two variants: one using a ResNet image encoder and the other using a Vision Transformer. This repository has the variant with the Vision Transformer.\n\n\n### Documents\n- [Blog Post](https://openai.com/blog/clip/)\n- [CLIP Paper](https://arxiv.org/abs/2103.00020)\n\n\n### Use with Transformers\n```python3\nfrom PIL import Image\nimport requests\nfrom transformers import CLIPProcessor, CLIPModel\nmodel = CLIPModel.from_pretrained(\"openai/clip-vit-base-patch16\")\nprocessor = CLIPProcessor.from_pretrained(\"openai/clip-vit-base-patch16\")\nurl = \"http://images.cocodataset.org/val2017/000000039769.jpg\"\nimage = Image.open(requests.get(url, stream=True).raw)\ninputs = processor(text=[\"a photo of a cat\", \"a photo of a dog\"], images=image, return_tensors=\"pt\", padding=True)\noutputs = model(**inputs)\nlogits_per_image = outputs.logits_per_image # this is the image-text similarity score\nprobs = logits_per_image.softmax(dim=1) # we can take the softmax to get the label probabilities\n```\n\n\n## Model Use\n\n### Intended Use\nThe model is intended as a research output for research communities. We hope that this model will enable researchers to better understand and explore zero-shot, arbitrary image classification. We also hope it can be used for interdisciplinary studies of the potential impact of such models - the CLIP paper includes a discussion of potential downstream impacts to provide an example for this sort of analysis.\n\n\n#### Primary intended uses\nThe primary intended users of these models are AI researchers.\nWe primarily imagine the model will be used by researchers to better understand robustness, generalization, and other capabilities, biases, and constraints of computer vision models.\n\n\n### Out-of-Scope Use Cases\n**Any** deployed use case of the model - whether commercial or not - is currently out of scope. Non-deployed use cases such as image search in a constrained environment, are also not recommended unless there is thorough in-domain testing of the model with a specific, fixed class taxonomy. This is because our safety assessment demonstrated a high need for task specific testing especially given the variability of CLIP’s performance with different class taxonomies. This makes untested and unconstrained deployment of the model in any use case currently potentially harmful. \nCertain use cases which would fall under the domain of surveillance and facial recognition are always out-of-scope regardless of performance of the model. This is because the use of artificial intelligence for tasks such as these can be premature currently given the lack of testing norms and checks to ensure its fair use.\nSince the model has not been purposefully trained in or evaluated on any languages other than English, its use should be limited to English language use cases.\n\n\n## Data\nThe model was trained on publicly available image-caption data. This was done through a combination of crawling a handful of websites and using commonly-used pre-existing image datasets such as [YFCC100M](http://projects.dfki.uni-kl.de/yfcc100m/). A large portion of the data comes from our crawling of the internet. This means that the data is more representative of people and societies most connected to the internet which tend to skew towards more developed nations, and younger, male users.\n\n\n### Data Mission Statement\nOur goal with building this dataset was to test out robustness and generalizability in computer vision tasks. As a result, the focus was on gathering large quantities of data from different publicly-available internet data sources. The data was gathered in a mostly non-interventionist manner. However, we only crawled websites that had policies against excessively violent and adult images and allowed us to filter out such content. We do not intend for this dataset to be used as the basis for any commercial or deployed model and will not be releasing the dataset.\n\n\n## Performance and Limitations\n\n\n### Performance\nWe have evaluated the performance of CLIP on a wide range of benchmarks across a variety of computer vision datasets such as OCR to texture recognition to fine-grained classification. The paper describes model performance on the following datasets:\n- Food101\n- CIFAR10   \n- CIFAR100   \n- Birdsnap\n- SUN397\n- Stanford Cars\n- FGVC Aircraft\n- VOC2007\n- DTD\n- Oxford-IIIT Pet dataset\n- Caltech101\n- Flowers102\n- MNIST   \n- SVHN \n- IIIT5K   \n- Hateful Memes   \n- SST-2\n- UCF101\n- Kinetics700\n- Country211\n- CLEVR Counting\n- KITTI Distance\n- STL-10\n- RareAct\n- Flickr30\n- MSCOCO\n- ImageNet\n- ImageNet-A\n- ImageNet-R\n- ImageNet Sketch\n- ObjectNet (ImageNet Overlap)\n- Youtube-BB\n- ImageNet-Vid\n\n\n## Limitations\nCLIP and our analysis of it have a number of limitations. CLIP currently struggles with respect to certain tasks such as fine grained classification and counting objects. CLIP also poses issues with regards to fairness and bias which we discuss in the paper and briefly in the next section. Additionally, our approach to testing CLIP also has an important limitation- in many cases we have used linear probes to evaluate the performance of CLIP and there is evidence suggesting that linear probes can underestimate model performance.\n\n\n### Bias and Fairness\nWe find that the performance of CLIP - and the specific biases it exhibits - can depend significantly on class design and the choices one makes for categories to include and exclude. We tested the risk of certain kinds of denigration with CLIP by classifying images of people from [Fairface](https://arxiv.org/abs/1908.04913) into crime-related and non-human animal categories. We found significant disparities with respect to race and gender. Additionally, we found that these disparities could shift based on how the classes were constructed. (Details captured in the Broader Impacts Section in the paper).\nWe also tested the performance of CLIP on gender, race and age classification using the Fairface dataset (We default to using race categories as they are constructed in the Fairface dataset.) in order to assess quality of performance across different demographics. We found accuracy >96% across all races for gender classification with ‘Middle Eastern’ having the highest accuracy (98.4%) and ‘White’ having the lowest (96.5%). Additionally, CLIP averaged ~93% for racial classification and ~63% for age classification. Our use of evaluations to test for gender, race and age classification as well as denigration harms is simply to evaluate performance of the model across people and surface potential risks and not to demonstrate an endorsement/enthusiasm for such tasks.\n\n\n## Feedback\n\n\n### Where to send questions or comments about the model\nPlease use [this Google Form](https://forms.gle/Uv7afRH5dvY34ZEs9)\n",
+              "extracted_code": "from PIL import Image\nimport requests\nfrom transformers import CLIPProcessor, CLIPModel\nmodel = CLIPModel.from_pretrained(\"openai/clip-vit-base-patch16\")\nprocessor = CLIPProcessor.from_pretrained(\"openai/clip-vit-base-patch16\")\nurl = \"http://images.cocodataset.org/val2017/000000039769.jpg\"\nimage = Image.open(requests.get(url, stream=True).raw)\ninputs = processor(text=[\"a photo of a cat\", \"a photo of a dog\"], images=image, return_tensors=\"pt\", padding=True)\noutputs = model(**inputs)\nlogits_per_image = outputs.logits_per_image # this is the image-text similarity score\nprobs = logits_per_image.softmax(dim=1) # we can take the softmax to get the label probabilities"
+            },
+            {
+              "id": "timm/vit_base_patch16_clip_224.openai",
+              "author": "timm",
+              "sha": "977e3dd0ec55ab8da155f2fbeb6b5f54948b6e3d",
+              "created_at": "2022-11-01T22:01:59+00:00",
+              "last_modified": "2025-01-21T21:59:22+00:00",
+              "private": false,
+              "gated": false,
+              "disabled": false,
+              "downloads": 251237,
+              "likes": 10,
+              "siblings": [
+                {
+                  "rfilename": ".gitattributes"
+                },
+                {
+                  "rfilename": "README.md"
+                },
+                {
+                  "rfilename": "config.json"
+                },
+                {
+                  "rfilename": "merges.txt"
+                },
+                {
+                  "rfilename": "open_clip_config.json"
+                },
+                {
+                  "rfilename": "open_clip_model.safetensors"
+                },
+                {
+                  "rfilename": "open_clip_pytorch_model.bin"
+                },
+                {
+                  "rfilename": "pytorch_model.bin"
+                },
+                {
+                  "rfilename": "special_tokens_map.json"
+                },
+                {
+                  "rfilename": "tokenizer.json"
+                }
+              ],
+              "card_data": {
+                "license": "apache-2.0",
+                "language": [],
+                "library_name": "timm",
+                "tags": [
+                  "image-feature-extraction",
+                  "timm",
+                  "vision",
+                  "transformers"
+                ],
+                "datasets": [],
+                "task_categories": [],
+                "size_categories": [],
+                "metrics": [],
+                "widget": []
+              },
+              "tags": [
+                "timm",
+                "pytorch",
+                "open_clip",
+                "safetensors",
+                "image-feature-extraction",
+                "vision",
+                "transformers",
+                "arxiv:2103.00020",
+                "arxiv:1908.04913",
+                "license:apache-2.0",
+                "region:us"
+              ],
+              "pipeline_tag": "image-feature-extraction",
+              "library_name": "timm",
+              "readme": "---\nlicense: apache-2.0\nlibrary_name: timm\ntags:\n- image-feature-extraction\n- timm\n- vision\n- transformers\n---\n\n# CLIP (OpenAI model for timm)\n\n## Model Details\nThe CLIP model was developed by researchers at OpenAI to learn about what contributes to robustness in computer vision tasks. The model was also developed to test the ability of models to generalize to arbitrary image classification tasks in a zero-shot manner. It was not developed for general model deployment - to deploy models like CLIP, researchers will first need to carefully study their capabilities in relation to the specific context they’re being deployed within.\n\nThis instance of the CLIP model is intended for loading in \n * `timm` (https://github.com/rwightman/pytorch-image-models) and\n * `OpenCLIP` (https://github.com/mlfoundations/open_clip) libraries.\n \n Please see https://huggingface.co/openai/clip-vit-base-patch16 for use in Hugging Face Transformers. \n\n### Model Date\nJanuary 2021\n\n### Model Type\nThe model uses a ViT-B/16 Transformer architecture as an image encoder and uses a masked self-attention Transformer as a text encoder. These encoders are trained to maximize the similarity of (image, text) pairs via a contrastive loss. \nThe original implementation had two variants: one using a ResNet image encoder and the other using a Vision Transformer. This repository has the variant with the Vision Transformer.\n\n### Documents\n- [Blog Post](https://openai.com/blog/clip/)\n- [CLIP Paper](https://arxiv.org/abs/2103.00020)\n\n## Model Use\n\n### Intended Use\nThe model is intended as a research output for research communities. We hope that this model will enable researchers to better understand and explore zero-shot, arbitrary image classification. We also hope it can be used for interdisciplinary studies of the potential impact of such models - the CLIP paper includes a discussion of potential downstream impacts to provide an example for this sort of analysis.\n\n#### Primary intended uses\nThe primary intended users of these models are AI researchers.\nWe primarily imagine the model will be used by researchers to better understand robustness, generalization, and other capabilities, biases, and constraints of computer vision models.\n\n### Out-of-Scope Use Cases\n**Any** deployed use case of the model - whether commercial or not - is currently out of scope. Non-deployed use cases such as image search in a constrained environment, are also not recommended unless there is thorough in-domain testing of the model with a specific, fixed class taxonomy. This is because our safety assessment demonstrated a high need for task specific testing especially given the variability of CLIP’s performance with different class taxonomies. This makes untested and unconstrained deployment of the model in any use case currently potentially harmful. \nCertain use cases which would fall under the domain of surveillance and facial recognition are always out-of-scope regardless of performance of the model. This is because the use of artificial intelligence for tasks such as these can be premature currently given the lack of testing norms and checks to ensure its fair use.\nSince the model has not been purposefully trained in or evaluated on any languages other than English, its use should be limited to English language use cases.\n\n## Data\nThe model was trained on publicly available image-caption data. This was done through a combination of crawling a handful of websites and using commonly-used pre-existing image datasets such as [YFCC100M](http://projects.dfki.uni-kl.de/yfcc100m/). A large portion of the data comes from our crawling of the internet. This means that the data is more representative of people and societies most connected to the internet which tend to skew towards more developed nations, and younger, male users.\n\n### Data Mission Statement\nOur goal with building this dataset was to test out robustness and generalizability in computer vision tasks. As a result, the focus was on gathering large quantities of data from different publicly-available internet data sources. The data was gathered in a mostly non-interventionist manner. However, we only crawled websites that had policies against excessively violent and adult images and allowed us to filter out such content. We do not intend for this dataset to be used as the basis for any commercial or deployed model and will not be releasing the dataset.\n\n## Limitations\nCLIP and our analysis of it have a number of limitations. CLIP currently struggles with respect to certain tasks such as fine grained classification and counting objects. CLIP also poses issues with regards to fairness and bias which we discuss in the paper and briefly in the next section. Additionally, our approach to testing CLIP also has an important limitation- in many cases we have used linear probes to evaluate the performance of CLIP and there is evidence suggesting that linear probes can underestimate model performance.\n\n### Bias and Fairness\nWe find that the performance of CLIP - and the specific biases it exhibits - can depend significantly on class design and the choices one makes for categories to include and exclude. We tested the risk of certain kinds of denigration with CLIP by classifying images of people from [Fairface](https://arxiv.org/abs/1908.04913) into crime-related and non-human animal categories. We found significant disparities with respect to race and gender. Additionally, we found that these disparities could shift based on how the classes were constructed. (Details captured in the Broader Impacts Section in the paper).\nWe also tested the performance of CLIP on gender, race and age classification using the Fairface dataset (We default to using race categories as they are constructed in the Fairface dataset.) in order to assess quality of performance across different demographics. We found accuracy >96% across all races for gender classification with ‘Middle Eastern’ having the highest accuracy (98.4%) and ‘White’ having the lowest (96.5%). Additionally, CLIP averaged ~93% for racial classification and ~63% for age classification. Our use of evaluations to test for gender, race and age classification as well as denigration harms is simply to evaluate performance of the model across people and surface potential risks and not to demonstrate an endorsement/enthusiasm for such tasks.\n",
+              "extracted_code": ""
+            },
+            {
+              "id": "laion/CLIP-ViT-B-16-laion2B-s34B-b88K",
+              "author": "laion",
+              "sha": "7288da5a0d6f0b51c4a2b27c624837a9236d0112",
+              "created_at": "2023-01-03T00:16:18+00:00",
+              "last_modified": "2023-04-19T18:55:10+00:00",
+              "private": false,
+              "gated": false,
+              "disabled": false,
+              "downloads": 150852,
+              "likes": 37,
+              "siblings": [
+                {
+                  "rfilename": ".gitattributes"
+                },
+                {
+                  "rfilename": "README.md"
+                },
+                {
+                  "rfilename": "merges.txt"
+                },
+                {
+                  "rfilename": "open_clip_config.json"
+                },
+                {
+                  "rfilename": "open_clip_model.safetensors"
+                },
+                {
+                  "rfilename": "open_clip_pytorch_model.bin"
+                },
+                {
+                  "rfilename": "special_tokens_map.json"
+                },
+                {
+                  "rfilename": "tokenizer.json"
+                },
+                {
+                  "rfilename": "tokenizer_config.json"
+                },
+                {
+                  "rfilename": "vocab.json"
+                }
+              ],
+              "card_data": {
+                "license": "mit",
+                "language": [],
+                "library_name": "open_clip",
+                "pipeline_tag": "zero-shot-image-classification",
+                "tags": [],
+                "datasets": [],
+                "task_categories": [],
+                "size_categories": [],
+                "metrics": [],
+                "widget": []
+              },
+              "tags": [
+                "open_clip",
+                "safetensors",
+                "zero-shot-image-classification",
+                "arxiv:1910.04867",
+                "license:mit",
+                "region:us"
+              ],
+              "pipeline_tag": "zero-shot-image-classification",
+              "library_name": "open_clip",
+              "readme": "---\nlicense: mit\npipeline_tag: zero-shot-image-classification\nlibrary_name: open_clip\n---\n# Model Card for CLIP ViT-B/16 - LAION-2B\n\n#  Table of Contents\n\n1. [Model Details](#model-details)\n2. [Uses](#uses)\n3. [Training Details](#training-details)\n4. [Evaluation](#evaluation)\n5. [Acknowledgements](#acknowledgements)\n6. [Citation](#citation)\n\n# Model Details\n\n## Model Description\n\nA CLIP ViT-B/16 model trained with the LAION-2B English subset of LAION-5B (https://laion.ai/blog/laion-5b/) using OpenCLIP (https://github.com/mlfoundations/open_clip).\n\nModel training done by Mehdi Cherti on the [JUWELS Booster](https://apps.fz-juelich.de/jsc/hps/juwels/booster-overview.html) supercomputer. See acknowledgements below.\n\n# Uses\n\nAs per the original [OpenAI CLIP model card](https://github.com/openai/CLIP/blob/d50d76daa670286dd6cacf3bcd80b5e4823fc8e1/model-card.md), this model is intended as a research output for research communities. We hope that this model will enable researchers to better understand and explore zero-shot, arbitrary image classification. We also hope it can be used for interdisciplinary studies of the potential impact of such model. \n\nThe OpenAI CLIP paper includes a discussion of potential downstream impacts to provide an example for this sort of analysis. Additionally, the LAION-5B blog (https://laion.ai/blog/laion-5b/) and upcoming paper include additional discussion as it relates specifically to the training dataset. \n\n## Direct Use\n\nZero-shot image classification, image and text retrieval, among others.\n\n## Downstream Use\n\nImage classification and other image task fine-tuning, linear probe image classification, image generation guiding and conditioning, among others.\n\n## Out-of-Scope Use\n\nAs per the OpenAI models,\n\n**Any** deployed use case of the model - whether commercial or not - is currently out of scope. Non-deployed use cases such as image search in a constrained environment, are also not recommended unless there is thorough in-domain testing of the model with a specific, fixed class taxonomy. This is because our safety assessment demonstrated a high need for task specific testing especially given the variability of CLIP’s performance with different class taxonomies. This makes untested and unconstrained deployment of the model in any use case currently potentially harmful. \n\nCertain use cases which would fall under the domain of surveillance and facial recognition are always out-of-scope regardless of performance of the model. This is because the use of artificial intelligence for tasks such as these can be premature currently given the lack of testing norms and checks to ensure its fair use.\n\nSince the model has not been purposefully trained in or evaluated on any languages other than English, its use should be limited to English language use cases.\n\nFurther the above notice, the LAION-5B dataset used in training of these models has additional considerations, see below.\n\n# Training Details\n\n## Training Data\n\nThis model was trained with the 2 Billion sample English subset of LAION-5B (https://laion.ai/blog/laion-5b/).\n\n**IMPORTANT NOTE:** The motivation behind dataset creation is to democratize research and experimentation around large-scale multi-modal model training and handling of uncurated, large-scale datasets crawled from publically available internet. Our recommendation is therefore to use the dataset for research purposes. Be aware that this large-scale dataset is uncurated. Keep in mind that the uncurated nature of the dataset means that collected links may lead to strongly discomforting and disturbing content for a human viewer. Therefore, please use the demo links with caution and at your own risk. It is possible to extract a “safe” subset by filtering out samples based on the safety tags (using a customized trained NSFW classifier that we built). While this strongly reduces the chance for encountering potentially harmful content when viewing, we cannot entirely exclude the possibility for harmful content being still present in safe mode, so that the warning holds also there. We think that providing the dataset openly to broad research and other interested communities will allow for transparent investigation of benefits that come along with training large-scale models as well as pitfalls and dangers that may stay unreported or unnoticed when working with closed large datasets that remain restricted to a small community. Providing our dataset openly, we however do not recommend using it for creating ready-to-go industrial products, as the basic research about general properties and safety of such large-scale models, which we would like to encourage with this release, is still in progress.\n\n## Training Procedure\n\nTODO\n\n# Evaluation\n\nEvaluation done with code in the [LAION CLIP Benchmark suite](https://github.com/LAION-AI/CLIP_benchmark).\n\n## Testing Data, Factors & Metrics\n\n### Testing Data\n\nThe testing is performed with VTAB+ (A combination of VTAB (https://arxiv.org/abs/1910.04867) w/ additional robustness datasets) for classification and COCO and Flickr for retrieval.\n\n\n## Results\n\nThe model achieves a 70.2 zero-shot top-1 accuracy on ImageNet-1k.\n\nAn initial round of benchmarks have been performed on a wider range of datasets, currently viewable at https://github.com/LAION-AI/CLIP_benchmark/blob/main/benchmark/results.ipynb\n\n# Acknowledgements\n\nAcknowledging the Gauss Centre for Supercomputing e.V. (http://gauss-centre.eu) for funding this part of work by providing computing time through the John von Neumann Institute for Computing (NIC) on the GCS Supercomputer JUWELS Booster at Jülich Supercomputing Centre (JSC).\n\n# Citation\n\n**BibTeX:**\n\nLAION-5B\n```bibtex\n@inproceedings{schuhmann2022laionb,\n  title={{LAION}-5B: An open large-scale dataset for training next generation image-text models},\n  author={Christoph Schuhmann and\n          Romain Beaumont and\n          Richard Vencu and\n          Cade W Gordon and\n          Ross Wightman and\n          Mehdi Cherti and\n          Theo Coombes and\n          Aarush Katta and\n          Clayton Mullis and\n          Mitchell Wortsman and\n          Patrick Schramowski and\n          Srivatsa R Kundurthy and\n          Katherine Crowson and\n          Ludwig Schmidt and\n          Robert Kaczmarczyk and\n          Jenia Jitsev},\n  booktitle={Thirty-sixth Conference on Neural Information Processing Systems Datasets and Benchmarks Track},\n  year={2022},\n  url={https://openreview.net/forum?id=M3Y74vmsMcY}\n}\n```\n\nOpenAI CLIP paper\n```\n@inproceedings{Radford2021LearningTV,\n  title={Learning Transferable Visual Models From Natural Language Supervision},\n  author={Alec Radford and Jong Wook Kim and Chris Hallacy and A. Ramesh and Gabriel Goh and Sandhini Agarwal and Girish Sastry and Amanda Askell and Pamela Mishkin and Jack Clark and Gretchen Krueger and Ilya Sutskever},\n  booktitle={ICML},\n  year={2021}\n}\n```\n\nOpenCLIP software\n```\n@software{ilharco_gabriel_2021_5143773,\n  author       = {Ilharco, Gabriel and\n                  Wortsman, Mitchell and\n                  Wightman, Ross and\n                  Gordon, Cade and\n                  Carlini, Nicholas and\n                  Taori, Rohan and\n                  Dave, Achal and\n                  Shankar, Vaishaal and\n                  Namkoong, Hongseok and\n                  Miller, John and\n                  Hajishirzi, Hannaneh and\n                  Farhadi, Ali and\n                  Schmidt, Ludwig},\n  title        = {OpenCLIP},\n  month        = jul,\n  year         = 2021,\n  note         = {If you use this software, please cite it as below.},\n  publisher    = {Zenodo},\n  version      = {0.1},\n  doi          = {10.5281/zenodo.5143773},\n  url          = {https://doi.org/10.5281/zenodo.5143773}\n}\n```",
+              "extracted_code": ""
+            },
+            {
+              "id": "laion/CLIP-ViT-B-16-DataComp.XL-s13B-b90K",
+              "author": "laion",
+              "sha": "d110532e8d4ff91c574ee60a342323f28468b287",
+              "created_at": "2023-05-15T19:27:18+00:00",
+              "last_modified": "2023-09-29T22:41:47+00:00",
+              "private": false,
+              "gated": false,
+              "disabled": false,
+              "downloads": 16225,
+              "likes": 8,
+              "siblings": [
+                {
+                  "rfilename": ".gitattributes"
+                },
+                {
+                  "rfilename": "README.md"
+                },
+                {
+                  "rfilename": "merges.txt"
+                },
+                {
+                  "rfilename": "open_clip_config.json"
+                },
+                {
+                  "rfilename": "open_clip_pytorch_model.bin"
+                },
+                {
+                  "rfilename": "special_tokens_map.json"
+                },
+                {
+                  "rfilename": "tokenizer.json"
+                },
+                {
+                  "rfilename": "tokenizer_config.json"
+                },
+                {
+                  "rfilename": "vocab.json"
+                }
+              ],
+              "card_data": {
+                "license": "mit",
+                "language": [],
+                "library_name": "open_clip",
+                "pipeline_tag": "zero-shot-image-classification",
+                "tags": [],
+                "datasets": [
+                  "mlfoundations/datacomp_pools"
+                ],
+                "task_categories": [],
+                "size_categories": [],
+                "metrics": [],
+                "widget": [
+                  {
+                    "src": "https://huggingface.co/datasets/mishig/sample_images/resolve/main/cat-dog-music.png",
+                    "candidate_labels": "playing music, playing sports",
+                    "example_title": "Cat & Dog"
+                  }
+                ]
+              },
+              "tags": [
+                "open_clip",
+                "zero-shot-image-classification",
+                "dataset:mlfoundations/datacomp_pools",
+                "arxiv:2304.14108",
+                "license:mit",
+                "region:us"
+              ],
+              "pipeline_tag": "zero-shot-image-classification",
+              "library_name": "open_clip",
+              "readme": "---\nlicense: mit\nwidget:\n- src: >-\n    https://huggingface.co/datasets/mishig/sample_images/resolve/main/cat-dog-music.png\n  candidate_labels: playing music, playing sports\n  example_title: Cat & Dog\nlibrary_name: open_clip\ndatasets:\n- mlfoundations/datacomp_pools\npipeline_tag: zero-shot-image-classification\n---\n# Model card for CLIP ViT-B-16 trained DataComp-1B\n\n#  Table of Contents\n\n1. [Model Details](#model-details)\n2. [Uses](#uses)\n3. [Training Details](#training-details)\n4. [Evaluation](#evaluation)\n5. [Acknowledgements](#acknowledgements)\n6. [Citation](#citation)\n7. [How To Get Started With the Model](#how-to-get-started-with-the-model)\n\n\n# Model Details\n\n## Model Description\n\nA CLIP ViT-B/16 model trained with the DataComp-1B (https://github.com/mlfoundations/datacomp) using OpenCLIP (https://github.com/mlfoundations/open_clip).\n\nModel training done on the [stability.ai](https://stability.ai/) cluster. \n\n# Uses\n\nAs per the original [OpenAI CLIP model card](https://github.com/openai/CLIP/blob/d50d76daa670286dd6cacf3bcd80b5e4823fc8e1/model-card.md), this model is intended as a research output for research communities. We hope that this model will enable researchers to better understand and explore zero-shot, arbitrary image classification. We also hope it can be used for interdisciplinary studies of the potential impact of such model. \n\nThe OpenAI CLIP paper includes a discussion of potential downstream impacts to provide an example for this sort of analysis. Additionally, the DataComp paper (https://arxiv.org/abs/2304.14108) include additional discussion as it relates specifically to the training dataset. \n\n## Direct Use\n\nZero-shot image classification, image and text retrieval, among others.\n\n## Downstream Use\n\nImage classification and other image task fine-tuning, linear probe image classification, image generation guiding and conditioning, among others.\n\n## Out-of-Scope Use\n\nAs per the OpenAI models,\n\n**Any** deployed use case of the model - whether commercial or not - is currently out of scope. Non-deployed use cases such as image search in a constrained environment, are also not recommended unless there is thorough in-domain testing of the model with a specific, fixed class taxonomy. This is because our safety assessment demonstrated a high need for task specific testing especially given the variability of CLIP’s performance with different class taxonomies. This makes untested and unconstrained deployment of the model in any use case currently potentially harmful. \n\nCertain use cases which would fall under the domain of surveillance and facial recognition are always out-of-scope regardless of performance of the model. This is because the use of artificial intelligence for tasks such as these can be premature currently given the lack of testing norms and checks to ensure its fair use.\n\n# Training Details\n\n## Training Data\n\nThis model was trained with the 1.4 Billion samples of the DataComp-1B dataset (https://arxiv.org/abs/2304.14108).\n\n**IMPORTANT NOTE:** The motivation behind dataset creation is to democratize research and experimentation around large-scale multi-modal model training and handling of uncurated, large-scale datasets crawled from publically available internet. Our recommendation is therefore to use the dataset for research purposes. Be aware that this large-scale dataset is uncurated. Keep in mind that the uncurated nature of the dataset means that collected links may lead to strongly discomforting and disturbing content for a human viewer. Therefore, please use the demo links with caution and at your own risk. It is possible to extract a “safe” subset by filtering out samples based on the safety tags (using a customized trained NSFW classifier that we built). While this strongly reduces the chance for encountering potentially harmful content when viewing, we cannot entirely exclude the possibility for harmful content being still present in safe mode, so that the warning holds also there. We think that providing the dataset openly to broad research and other interested communities will allow for transparent investigation of benefits that come along with training large-scale models as well as pitfalls and dangers that may stay unreported or unnoticed when working with closed large datasets that remain restricted to a small community. Providing our dataset openly, we however do not recommend using it for creating ready-to-go industrial products, as the basic research about general properties and safety of such large-scale models, which we would like to encourage with this release, is still in progress.\n\n## Training Procedure\n\nPlease see https://arxiv.org/abs/2304.14108.\n\n# Evaluation\n\nEvaluation done on 38 datasets, using the [DataComp repo](https://github.com/mlfoundations/datacomp) and the [LAION CLIP Benchmark](https://github.com/LAION-AI/CLIP_benchmark).\n\n## Testing Data, Factors & Metrics\n\n### Testing Data\n\nThe testing is performed on a suite of 38 datasets. See our paper for more details (https://arxiv.org/abs/2304.14108).\n\n## Results\n\nThe model achieves a 73.5% zero-shot top-1 accuracy on ImageNet-1k. See our paper for more details and results (https://arxiv.org/abs/2304.14108).\n\n# Acknowledgements\n\nAcknowledging [stability.ai](https://stability.ai/) for the compute used to train this model.\n\n# Citation\n\n**BibTeX:**\n\nDataComp\n```bibtex\n@article{datacomp,\n  title={DataComp: In search of the next generation of multimodal datasets},\n  author={Samir Yitzhak Gadre, Gabriel Ilharco, Alex Fang, Jonathan Hayase, Georgios Smyrnis, Thao Nguyen, Ryan Marten, Mitchell Wortsman, Dhruba Ghosh, Jieyu Zhang, Eyal Orgad, Rahim Entezari, Giannis Daras, Sarah Pratt, Vivek Ramanujan, Yonatan Bitton, Kalyani Marathe, Stephen Mussmann, Richard Vencu, Mehdi Cherti, Ranjay Krishna, Pang Wei Koh, Olga Saukh, Alexander Ratner, Shuran Song, Hannaneh Hajishirzi, Ali Farhadi, Romain Beaumont, Sewoong Oh, Alex Dimakis, Jenia Jitsev, Yair Carmon, Vaishaal Shankar, Ludwig Schmidt},\n  journal={arXiv preprint arXiv:2304.14108},\n  year={2023}\n}\n```\n\n\nOpenAI CLIP paper\n```\n@inproceedings{Radford2021LearningTV,\n  title={Learning Transferable Visual Models From Natural Language Supervision},\n  author={Alec Radford and Jong Wook Kim and Chris Hallacy and A. Ramesh and Gabriel Goh and Sandhini Agarwal and Girish Sastry and Amanda Askell and Pamela Mishkin and Jack Clark and Gretchen Krueger and Ilya Sutskever},\n  booktitle={ICML},\n  year={2021}\n}\n```\n\nOpenCLIP software\n```\n@software{ilharco_gabriel_2021_5143773,\n  author       = {Ilharco, Gabriel and\n                  Wortsman, Mitchell and\n                  Wightman, Ross and\n                  Gordon, Cade and\n                  Carlini, Nicholas and\n                  Taori, Rohan and\n                  Dave, Achal and\n                  Shankar, Vaishaal and\n                  Namkoong, Hongseok and\n                  Miller, John and\n                  Hajishirzi, Hannaneh and\n                  Farhadi, Ali and\n                  Schmidt, Ludwig},\n  title        = {OpenCLIP},\n  month        = jul,\n  year         = 2021,\n  note         = {If you use this software, please cite it as below.},\n  publisher    = {Zenodo},\n  version      = {0.1},\n  doi          = {10.5281/zenodo.5143773},\n  url          = {https://doi.org/10.5281/zenodo.5143773}\n}\n```\n\n# How to Get Started with the Model\n\nSee https://github.com/mlfoundations/open_clip",
+              "extracted_code": ""
+            },
+            {
+              "id": "apple/DFN2B-CLIP-ViT-B-16",
+              "author": "apple",
+              "sha": "8b023e8bb8b0a27c17859af548c9fc3105d6c29c",
+              "created_at": "2023-10-31T03:52:33+00:00",
+              "last_modified": "2025-02-28T18:39:34+00:00",
+              "private": false,
+              "gated": false,
+              "disabled": false,
+              "downloads": 12052,
+              "likes": 9,
+              "siblings": [
+                {
+                  "rfilename": ".gitattributes"
+                },
+                {
+                  "rfilename": "LICENSE"
+                },
+                {
+                  "rfilename": "README.md"
+                },
+                {
+                  "rfilename": "eval_results.jsonl"
+                },
+                {
+                  "rfilename": "merges.txt"
+                },
+                {
+                  "rfilename": "open_clip_config.json"
+                },
+                {
+                  "rfilename": "open_clip_pytorch_model.bin"
+                },
+                {
+                  "rfilename": "special_tokens_map.json"
+                },
+                {
+                  "rfilename": "tokenizer.json"
+                },
+                {
+                  "rfilename": "tokenizer_config.json"
+                }
+              ],
+              "card_data": {
+                "license": "apple-amlr",
+                "language": [],
+                "tags": [],
+                "datasets": [],
+                "task_categories": [],
+                "size_categories": [],
+                "metrics": [],
+                "widget": []
+              },
+              "tags": [
+                "open_clip",
+                "arxiv:2309.17425",
+                "license:apple-amlr",
+                "region:us"
+              ],
+              "library_name": "open_clip",
+              "readme": "---\nlicense: apple-amlr\nlicense_name: apple-sample-code-license\nlicense_link: LICENSE\n---\n\n\n\nA CLIP (Contrastive Language-Image Pre-training) model trained on DFN-2B. \nData Filtering Networks (DFNs) are small networks used to automatically filter large pools of uncurated data. \nThis model was trained on 2B images that were filtered from a pool of 12.8B uncurated image-text pairs \n(12.8B image-text pairs from CommonPool-12.8B).\n\nThese weights are directly usable in OpenCLIP (image + text).\n\n\n## Model Details\n\n- **Model Type:**  Contrastive Image-Text, Zero-Shot Image Classification.\n- **Dataset:** DFN-2b\n- **Papers:**\n  - Data Filtering Networks: https://arxiv.org/abs/2309.17425\n- **Examples Seen:** 12.8B\n\n\n## Model Metrics \n| Dataset                |   Metric |\n|:-----------------------|---------:|\n| ImageNet 1k            | 0.76236  |\n| Caltech-101            | 0.942894 |\n| CIFAR-10               | 0.9672   |\n| CIFAR-100              | 0.8347   |\n| CLEVR Counts           | 0.232333 |\n| CLEVR Distance         | 0.245267 |\n| Country211             | 0.19545  |\n| Describable Textures   | 0.575532 |\n| EuroSAT                | 0.54     |\n| FGVC Aircraft          | 0.248503 |\n| Food-101               | 0.91303  |\n| GTSRB                  | 0.469913 |\n| ImageNet Sketch        | 0.620684 |\n| ImageNet v2            | 0.682    |\n| ImageNet-A             | 0.482133 |\n| ImageNet-O             | 0.493    |\n| ImageNet-R             | 0.830967 |\n| KITTI Vehicle Distance | 0.192686 |\n| MNIST                  | 0.782    |\n| ObjectNet              | 0.631851 |\n| Oxford Flowers-102     | 0.819895 |\n| Oxford-IIIT Pet        | 0.936907 |\n| Pascal VOC 2007        | 0.788528 |\n| PatchCamelyon          | 0.521545 |\n| Rendered SST2          | 0.486546 |\n| RESISC45               | 0.61381  |\n| Stanford Cars          | 0.90735  |\n| STL-10                 | 0.97525  |\n| SUN397                 | 0.714162 |\n| SVHN                   | 0.598955 |\n| Flickr                 | 0.7728   |\n| MSCOCO                 | 0.518773 |\n| WinoGAViL              | 0.541748 |\n| iWildCam               | 0.155574 |\n| Camelyon17             | 0.499283 |\n| FMoW                   | 0.141149 |\n| Dollar Street          | 0.625    |\n| GeoDE                  | 0.891023 |\n| **Average**                | **0.609232** |\n\n## Model Usage\n### With OpenCLIP\n```\nimport torch\nimport torch.nn.functional as F\nfrom urllib.request import urlopen\nfrom PIL import Image\nfrom open_clip import create_model_from_pretrained, get_tokenizer \n\nmodel, preprocess = create_model_from_pretrained('hf-hub:apple/DFN2B-CLIP-ViT-B-16')\ntokenizer = get_tokenizer('ViT-B-16')\n\nimage = Image.open(urlopen(\n    'https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/beignets-task-guide.png'\n))\nimage = preprocess(image).unsqueeze(0)\n\nlabels_list = [\"a dog\", \"a cat\", \"a donut\", \"a beignet\"]\ntext = tokenizer(labels_list, context_length=model.context_length)\n\nwith torch.no_grad(), torch.cuda.amp.autocast():\n    image_features = model.encode_image(image)\n    text_features = model.encode_text(text)\n    image_features = F.normalize(image_features, dim=-1)\n    text_features = F.normalize(text_features, dim=-1)\n\n    text_probs = torch.sigmoid(image_features @ text_features.T * model.logit_scale.exp() + model.logit_bias)\n\nzipped_list = list(zip(labels_list, [round(p.item(), 3) for p in text_probs[0]]))\nprint(\"Label probabilities: \", zipped_list)\n```\n\n## Citation\n```bibtex\n@article{fang2023data,\n  title={Data Filtering Networks},\n  author={Fang, Alex and Jose, Albin Madappally and Jain, Amit and Schmidt, Ludwig and Toshev, Alexander and Shankar, Vaishaal},\n  journal={arXiv preprint arXiv:2309.17425},\n  year={2023}\n}\n\n```\n\n",
+              "extracted_code": "import torch\nimport torch.nn.functional as F\nfrom urllib.request import urlopen\nfrom PIL import Image\nfrom open_clip import create_model_from_pretrained, get_tokenizer \n\nmodel, preprocess = create_model_from_pretrained('hf-hub:apple/DFN2B-CLIP-ViT-B-16')\ntokenizer = get_tokenizer('ViT-B-16')\n\nimage = Image.open(urlopen(\n    'https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/beignets-task-guide.png'\n))\nimage = preprocess(image).unsqueeze(0)\n\nlabels_list = [\"a dog\", \"a cat\", \"a donut\", \"a beignet\"]\ntext = tokenizer(labels_list, context_length=model.context_length)\n\nwith torch.no_grad(), torch.cuda.amp.autocast():\n    image_features = model.encode_image(image)\n    text_features = model.encode_text(text)\n    image_features = F.normalize(image_features, dim=-1)\n    text_features = F.normalize(text_features, dim=-1)\n\n    text_probs = torch.sigmoid(image_features @ text_features.T * model.logit_scale.exp() + model.logit_bias)\n\nzipped_list = list(zip(labels_list, [round(p.item(), 3) for p in text_probs[0]]))\nprint(\"Label probabilities: \", zipped_list)"
+            },
+            {
+              "id": "timm/vit_small_patch14_dinov2.lvd142m",
+              "author": "timm",
+              "sha": "4610ca143709d58a633b6397a74412c2c3842454",
+              "created_at": "2023-05-09T21:09:24+00:00",
+              "last_modified": "2025-01-21T21:13:22+00:00",
+              "private": false,
+              "gated": false,
+              "disabled": false,
+              "downloads": 107021,
+              "likes": 4,
+              "siblings": [
+                {
+                  "rfilename": ".gitattributes"
+                },
+                {
+                  "rfilename": "README.md"
+                },
+                {
+                  "rfilename": "config.json"
+                },
+                {
+                  "rfilename": "model.safetensors"
+                },
+                {
+                  "rfilename": "pytorch_model.bin"
+                }
+              ],
+              "card_data": {
+                "license": "apache-2.0",
+                "language": [],
+                "library_name": "timm",
+                "tags": [
+                  "image-feature-extraction",
+                  "timm",
+                  "transformers"
+                ],
+                "datasets": [],
+                "task_categories": [],
+                "size_categories": [],
+                "metrics": [],
+                "widget": []
+              },
+              "tags": [
+                "timm",
+                "pytorch",
+                "safetensors",
+                "image-feature-extraction",
+                "transformers",
+                "arxiv:2304.07193",
+                "arxiv:2010.11929",
+                "license:apache-2.0",
+                "region:us"
+              ],
+              "pipeline_tag": "image-feature-extraction",
+              "library_name": "timm",
+              "readme": "---\nlicense: apache-2.0\nlibrary_name: timm\ntags:\n- image-feature-extraction\n- timm\n- transformers\n---\n# Model card for vit_small_patch14_dinov2.lvd142m\n\nA Vision Transformer (ViT) image feature model. Pretrained on LVD-142M with self-supervised DINOv2 method.\n\n\n## Model Details\n- **Model Type:** Image classification / feature backbone\n- **Model Stats:**\n  - Params (M): 22.1\n  - GMACs: 46.8\n  - Activations (M): 198.8\n  - Image size: 518 x 518\n- **Papers:**\n  - DINOv2: Learning Robust Visual Features without Supervision: https://arxiv.org/abs/2304.07193\n  - An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale: https://arxiv.org/abs/2010.11929v2\n- **Original:** https://github.com/facebookresearch/dinov2\n- **Pretrain Dataset:** LVD-142M\n\n## Model Usage\n### Image Classification\n```python\nfrom urllib.request import urlopen\nfrom PIL import Image\nimport timm\n\nimg = Image.open(urlopen(\n    'https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/beignets-task-guide.png'\n))\n\nmodel = timm.create_model('vit_small_patch14_dinov2.lvd142m', pretrained=True)\nmodel = model.eval()\n\n# get model specific transforms (normalization, resize)\ndata_config = timm.data.resolve_model_data_config(model)\ntransforms = timm.data.create_transform(**data_config, is_training=False)\n\noutput = model(transforms(img).unsqueeze(0))  # unsqueeze single image into batch of 1\n\ntop5_probabilities, top5_class_indices = torch.topk(output.softmax(dim=1) * 100, k=5)\n```\n\n### Image Embeddings\n```python\nfrom urllib.request import urlopen\nfrom PIL import Image\nimport timm\n\nimg = Image.open(urlopen(\n    'https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/beignets-task-guide.png'\n))\n\nmodel = timm.create_model(\n    'vit_small_patch14_dinov2.lvd142m',\n    pretrained=True,\n    num_classes=0,  # remove classifier nn.Linear\n)\nmodel = model.eval()\n\n# get model specific transforms (normalization, resize)\ndata_config = timm.data.resolve_model_data_config(model)\ntransforms = timm.data.create_transform(**data_config, is_training=False)\n\noutput = model(transforms(img).unsqueeze(0))  # output is (batch_size, num_features) shaped tensor\n\n# or equivalently (without needing to set num_classes=0)\n\noutput = model.forward_features(transforms(img).unsqueeze(0))\n# output is unpooled, a (1, 1370, 384) shaped tensor\n\noutput = model.forward_head(output, pre_logits=True)\n# output is a (1, num_features) shaped tensor\n```\n\n## Model Comparison\nExplore the dataset and runtime metrics of this model in timm [model results](https://github.com/huggingface/pytorch-image-models/tree/main/results).\n\n## Citation\n```bibtex\n@misc{oquab2023dinov2,\n  title={DINOv2: Learning Robust Visual Features without Supervision},\n  author={Oquab, Maxime and Darcet, Timothée and Moutakanni, Theo and Vo, Huy V. and Szafraniec, Marc and Khalidov, Vasil and Fernandez, Pierre and Haziza, Daniel and Massa, Francisco and El-Nouby, Alaaeldin and Howes, Russell and Huang, Po-Yao and Xu, Hu and Sharma, Vasu and Li, Shang-Wen and Galuba, Wojciech and Rabbat, Mike and Assran, Mido and Ballas, Nicolas and Synnaeve, Gabriel and Misra, Ishan and Jegou, Herve and Mairal, Julien and Labatut, Patrick and Joulin, Armand and Bojanowski, Piotr},\n  journal={arXiv:2304.07193},\n  year={2023}\n}\n```\n```bibtex\n@article{dosovitskiy2020vit,\n  title={An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale},\n  author={Dosovitskiy, Alexey and Beyer, Lucas and Kolesnikov, Alexander and Weissenborn, Dirk and Zhai, Xiaohua and Unterthiner, Thomas and  Dehghani, Mostafa and Minderer, Matthias and Heigold, Georg and Gelly, Sylvain and Uszkoreit, Jakob and Houlsby, Neil},\n  journal={ICLR},\n  year={2021}\n}\n```\n```bibtex\n@misc{rw2019timm,\n  author = {Ross Wightman},\n  title = {PyTorch Image Models},\n  year = {2019},\n  publisher = {GitHub},\n  journal = {GitHub repository},\n  doi = {10.5281/zenodo.4414861},\n  howpublished = {\\url{https://github.com/huggingface/pytorch-image-models}}\n}\n```",
+              "extracted_code": "from urllib.request import urlopen\nfrom PIL import Image\nimport timm\n\nimg = Image.open(urlopen(\n    'https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/beignets-task-guide.png'\n))\n\nmodel = timm.create_model('vit_small_patch14_dinov2.lvd142m', pretrained=True)\nmodel = model.eval()\n\n# get model specific transforms (normalization, resize)\ndata_config = timm.data.resolve_model_data_config(model)\ntransforms = timm.data.create_transform(**data_config, is_training=False)\n\noutput = model(transforms(img).unsqueeze(0))  # unsqueeze single image into batch of 1\n\ntop5_probabilities, top5_class_indices = torch.topk(output.softmax(dim=1) * 100, k=5)"
+            },
+            {
+              "id": "timm/vit_small_patch14_reg4_dinov2.lvd142m",
+              "author": "timm",
+              "sha": "c04b5193082a8d5b0c4856c7937384a48136c5de",
+              "created_at": "2023-10-30T04:53:09+00:00",
+              "last_modified": "2025-01-21T21:13:07+00:00",
+              "private": false,
+              "gated": false,
+              "disabled": false,
+              "downloads": 39525,
+              "likes": 5,
+              "siblings": [
+                {
+                  "rfilename": ".gitattributes"
+                },
+                {
+                  "rfilename": "README.md"
+                },
+                {
+                  "rfilename": "config.json"
+                },
+                {
+                  "rfilename": "model.safetensors"
+                },
+                {
+                  "rfilename": "pytorch_model.bin"
+                }
+              ],
+              "card_data": {
+                "license": "apache-2.0",
+                "language": [],
+                "library_name": "timm",
+                "tags": [
+                  "image-feature-extraction",
+                  "timm",
+                  "transformers"
+                ],
+                "datasets": [],
+                "task_categories": [],
+                "size_categories": [],
+                "metrics": [],
+                "widget": []
+              },
+              "tags": [
+                "timm",
+                "pytorch",
+                "safetensors",
+                "image-feature-extraction",
+                "transformers",
+                "arxiv:2309.16588",
+                "arxiv:2304.07193",
+                "arxiv:2010.11929",
+                "license:apache-2.0",
+                "region:us"
+              ],
+              "pipeline_tag": "image-feature-extraction",
+              "library_name": "timm",
+              "readme": "---\nlicense: apache-2.0\nlibrary_name: timm\ntags:\n- image-feature-extraction\n- timm\n- transformers\n---\n# Model card for vit_small_patch14_reg4_dinov2.lvd142m\n\nA Vision Transformer (ViT) image feature model with registers. Pretrained on LVD-142M with self-supervised DINOv2 method.\n\n\n## Model Details\n- **Model Type:** Image classification / feature backbone\n- **Model Stats:**\n  - Params (M): 22.1\n  - GMACs: 29.6\n  - Activations (M): 57.5\n  - Image size: 518 x 518\n- **Papers:**\n  - Vision Transformers Need Registers: https://arxiv.org/abs/2309.16588\n  - DINOv2: Learning Robust Visual Features without Supervision: https://arxiv.org/abs/2304.07193\n  - An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale: https://arxiv.org/abs/2010.11929v2\n- **Original:** https://github.com/facebookresearch/dinov2\n- **Pretrain Dataset:** LVD-142M\n\n## Model Usage\n### Image Classification\n```python\nfrom urllib.request import urlopen\nfrom PIL import Image\nimport timm\n\nimg = Image.open(urlopen(\n    'https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/beignets-task-guide.png'\n))\n\nmodel = timm.create_model('vit_small_patch14_reg4_dinov2.lvd142m', pretrained=True)\nmodel = model.eval()\n\n# get model specific transforms (normalization, resize)\ndata_config = timm.data.resolve_model_data_config(model)\ntransforms = timm.data.create_transform(**data_config, is_training=False)\n\noutput = model(transforms(img).unsqueeze(0))  # unsqueeze single image into batch of 1\n\ntop5_probabilities, top5_class_indices = torch.topk(output.softmax(dim=1) * 100, k=5)\n```\n\n### Image Embeddings\n```python\nfrom urllib.request import urlopen\nfrom PIL import Image\nimport timm\n\nimg = Image.open(urlopen(\n    'https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/beignets-task-guide.png'\n))\n\nmodel = timm.create_model(\n    'vit_small_patch14_reg4_dinov2.lvd142m',\n    pretrained=True,\n    num_classes=0,  # remove classifier nn.Linear\n)\nmodel = model.eval()\n\n# get model specific transforms (normalization, resize)\ndata_config = timm.data.resolve_model_data_config(model)\ntransforms = timm.data.create_transform(**data_config, is_training=False)\n\noutput = model(transforms(img).unsqueeze(0))  # output is (batch_size, num_features) shaped tensor\n\n# or equivalently (without needing to set num_classes=0)\n\noutput = model.forward_features(transforms(img).unsqueeze(0))\n# output is unpooled, a (1, 1374, 384) shaped tensor\n\noutput = model.forward_head(output, pre_logits=True)\n# output is a (1, num_features) shaped tensor\n```\n\n## Model Comparison\nExplore the dataset and runtime metrics of this model in timm [model results](https://github.com/huggingface/pytorch-image-models/tree/main/results).\n\n## Citation\n```bibtex\n@article{darcet2023vision,\n  title={Vision Transformers Need Registers},\n  author={Darcet, Timoth{'e}e and Oquab, Maxime and Mairal, Julien and Bojanowski, Piotr},\n  journal={arXiv preprint arXiv:2309.16588},\n  year={2023}\n}\n```\n```bibtex\n@misc{oquab2023dinov2,\n  title={DINOv2: Learning Robust Visual Features without Supervision},\n  author={Oquab, Maxime and Darcet, Timothée and Moutakanni, Theo and Vo, Huy V. and Szafraniec, Marc and Khalidov, Vasil and Fernandez, Pierre and Haziza, Daniel and Massa, Francisco and El-Nouby, Alaaeldin and Howes, Russell and Huang, Po-Yao and Xu, Hu and Sharma, Vasu and Li, Shang-Wen and Galuba, Wojciech and Rabbat, Mike and Assran, Mido and Ballas, Nicolas and Synnaeve, Gabriel and Misra, Ishan and Jegou, Herve and Mairal, Julien and Labatut, Patrick and Joulin, Armand and Bojanowski, Piotr},\n  journal={arXiv:2304.07193},\n  year={2023}\n}\n```\n```bibtex\n@article{dosovitskiy2020vit,\n  title={An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale},\n  author={Dosovitskiy, Alexey and Beyer, Lucas and Kolesnikov, Alexander and Weissenborn, Dirk and Zhai, Xiaohua and Unterthiner, Thomas and  Dehghani, Mostafa and Minderer, Matthias and Heigold, Georg and Gelly, Sylvain and Uszkoreit, Jakob and Houlsby, Neil},\n  journal={ICLR},\n  year={2021}\n}\n```\n```bibtex\n@misc{rw2019timm,\n  author = {Ross Wightman},\n  title = {PyTorch Image Models},\n  year = {2019},\n  publisher = {GitHub},\n  journal = {GitHub repository},\n  doi = {10.5281/zenodo.4414861},\n  howpublished = {\\url{https://github.com/huggingface/pytorch-image-models}}\n}\n```",
+              "extracted_code": "from urllib.request import urlopen\nfrom PIL import Image\nimport timm\nimport torch\n\nimg = Image.open(urlopen(\n    'https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/beignets-task-guide.png'\n))\n\nmodel = timm.create_model('vit_small_patch14_reg4_dinov2.lvd142m', pretrained=True)\nmodel = model.eval()\n\n# get model specific transforms (normalization, resize)\ndata_config = timm.data.resolve_model_data_config(model)\ntransforms = timm.data.create_transform(**data_config, is_training=False)\n\noutput = model(transforms(img).unsqueeze(0))  # unsqueeze single image into batch of 1\n\ntop5_probabilities, top5_class_indices = torch.topk(output.softmax(dim=1) * 100, k=5)"
+            }
+          ],
+          "datasets": [
+            {
+              "id": "gitpull/Imagenet_64x64",
+              "author": "gitpull",
+              "sha": "217af7b2bfd11bfbadce4dc9088377d7fd85fbf9",
+              "created_at": "2024-12-27T03:28:51+00:00",
+              "last_modified": "2024-12-27T04:09:00+00:00",
+              "private": false,
+              "gated": false,
+              "disabled": false,
+              "downloads": 8,
+              "likes": 0,
+              "siblings": [
+                {
+                  "rfilename": ".gitattributes"
+                },
+                {
+                  "rfilename": "ImageNet.zip"
+                },
+                {
+                  "rfilename": "README.md"
+                }
+              ],
+              "card_data": {
+                "license": "apache-2.0",
+                "language": [],
+                "tags": [],
+                "datasets": [],
+                "task_categories": [],
+                "size_categories": [],
+                "metrics": [],
+                "widget": []
+              },
+              "tags": [
+                "license:apache-2.0",
+                "region:us"
+              ],
+              "readme": "---\r\nlicense: apache-2.0\r\n---\r\n",
+              "extracted_code": ""
+            },
+            {
+              "id": "uoft-cs/cifar10",
+              "author": "uoft-cs",
+              "sha": "0b2714987fa478483af9968de7c934580d0bb9a2",
+              "created_at": "2022-03-02T23:29:22+00:00",
+              "last_modified": "2024-01-04T06:53:11+00:00",
+              "private": false,
+              "gated": false,
+              "disabled": false,
+              "downloads": 69296,
+              "likes": 81,
+              "siblings": [
+                {
+                  "rfilename": ".gitattributes"
+                },
+                {
+                  "rfilename": "README.md"
+                },
+                {
+                  "rfilename": "plain_text/test-00000-of-00001.parquet"
+                },
+                {
+                  "rfilename": "plain_text/train-00000-of-00001.parquet"
+                }
+              ],
+              "card_data": {
+                "license": [
+                  "unknown"
+                ],
+                "language": [
+                  "en"
+                ],
+                "tags": [],
+                "datasets": [],
+                "task_categories": [
+                  "image-classification"
+                ],
+                "size_categories": [
+                  "10K<n<100K"
+                ],
+                "metrics": [],
+                "widget": []
+              },
+              "tags": [
+                "task_categories:image-classification",
+                "annotations_creators:crowdsourced",
+                "language_creators:found",
+                "multilinguality:monolingual",
+                "source_datasets:extended|other-80-Million-Tiny-Images",
+                "language:en",
+                "license:unknown",
+                "size_categories:10K<n<100K",
+                "format:parquet",
+                "modality:image",
+                "library:datasets",
+                "library:pandas",
+                "library:mlcroissant",
+                "library:polars",
+                "region:us"
+              ],
+              "readme": "---\nannotations_creators:\n- crowdsourced\nlanguage_creators:\n- found\nlanguage:\n- en\nlicense:\n- unknown\nmultilinguality:\n- monolingual\nsize_categories:\n- 10K<n<100K\nsource_datasets:\n- extended|other-80-Million-Tiny-Images\ntask_categories:\n- image-classification\ntask_ids: []\npaperswithcode_id: cifar-10\npretty_name: Cifar10\ndataset_info:\n  config_name: plain_text\n  features:\n  - name: img\n    dtype: image\n  - name: label\n    dtype:\n      class_label:\n        names:\n          '0': airplane\n          '1': automobile\n          '2': bird\n          '3': cat\n          '4': deer\n          '5': dog\n          '6': frog\n          '7': horse\n          '8': ship\n          '9': truck\n  splits:\n  - name: train\n    num_bytes: 113648310.0\n    num_examples: 50000\n  - name: test\n    num_bytes: 22731580.0\n    num_examples: 10000\n  download_size: 143646105\n  dataset_size: 136379890.0\nconfigs:\n- config_name: plain_text\n  data_files:\n  - split: train\n    path: plain_text/train-*\n  - split: test\n    path: plain_text/test-*\n  default: true\n---\n\n# Dataset Card for CIFAR-10\n\n## Table of Contents\n- [Dataset Description](#dataset-description)\n  - [Dataset Summary](#dataset-summary)\n  - [Supported Tasks and Leaderboards](#supported-tasks-and-leaderboards)\n  - [Languages](#languages)\n- [Dataset Structure](#dataset-structure)\n  - [Data Instances](#data-instances)\n  - [Data Fields](#data-fields)\n  - [Data Splits](#data-splits)\n- [Dataset Creation](#dataset-creation)\n  - [Curation Rationale](#curation-rationale)\n  - [Source Data](#source-data)\n  - [Annotations](#annotations)\n  - [Personal and Sensitive Information](#personal-and-sensitive-information)\n- [Considerations for Using the Data](#considerations-for-using-the-data)\n  - [Social Impact of Dataset](#social-impact-of-dataset)\n  - [Discussion of Biases](#discussion-of-biases)\n  - [Other Known Limitations](#other-known-limitations)\n- [Additional Information](#additional-information)\n  - [Dataset Curators](#dataset-curators)\n  - [Licensing Information](#licensing-information)\n  - [Citation Information](#citation-information)\n  - [Contributions](#contributions)\n\n## Dataset Description\n\n- **Homepage:** https://www.cs.toronto.edu/~kriz/cifar.html\n- **Repository:** \n- **Paper:** Learning Multiple Layers of Features from Tiny Images by Alex Krizhevsky\n- **Leaderboard:**\n- **Point of Contact:**\n\n### Dataset Summary\n\nThe CIFAR-10 dataset consists of 60000 32x32 colour images in 10 classes, with 6000 images per class. There are 50000 training images and 10000 test images.\nThe dataset is divided into five training batches and one test batch, each with 10000 images. The test batch contains exactly 1000 randomly-selected images from each class. The training batches contain the remaining images in random order, but some training batches may contain more images from one class than another. Between them, the training batches contain exactly 5000 images from each class.\n\n### Supported Tasks and Leaderboards\n\n- `image-classification`: The goal of this task is to classify a given image into one of 10 classes. The leaderboard is available [here](https://paperswithcode.com/sota/image-classification-on-cifar-10).\n\n### Languages\n\nEnglish\n\n## Dataset Structure\n\n### Data Instances\n\nA sample from the training set is provided below:\n\n```\n{\n  'img': <PIL.PngImagePlugin.PngImageFile image mode=RGB size=32x32 at 0x201FA6EE748>,\n  'label': 0\n}\n```\n\n### Data Fields\n\n- img: A `PIL.Image.Image` object containing the 32x32 image. Note that when accessing the image column: `dataset[0][\"image\"]` the image file is automatically decoded. Decoding of a large number of image files might take a significant amount of time. Thus it is important to first query the sample index before the `\"image\"` column, *i.e.* `dataset[0][\"image\"]` should **always** be preferred over `dataset[\"image\"][0]`\n- label: 0-9 with the following correspondence\n         0 airplane\n         1 automobile\n         2 bird\n         3 cat\n         4 deer\n         5 dog\n         6 frog\n         7 horse\n         8 ship\n         9 truck\n\n### Data Splits\n\nTrain and Test\n\n## Dataset Creation\n\n### Curation Rationale\n\n[More Information Needed]\n\n### Source Data\n\n#### Initial Data Collection and Normalization\n\n[More Information Needed]\n\n#### Who are the source language producers?\n\n[More Information Needed]\n\n### Annotations\n\n#### Annotation process\n\n[More Information Needed]\n\n#### Who are the annotators?\n\n[More Information Needed]\n\n### Personal and Sensitive Information\n\n[More Information Needed]\n\n## Considerations for Using the Data\n\n### Social Impact of Dataset\n\n[More Information Needed]\n\n### Discussion of Biases\n\n[More Information Needed]\n\n### Other Known Limitations\n\n[More Information Needed]\n\n## Additional Information\n\n### Dataset Curators\n\n[More Information Needed]\n\n### Licensing Information\n\n[More Information Needed]\n\n### Citation Information\n\n```\n@TECHREPORT{Krizhevsky09learningmultiple,\n    author = {Alex Krizhevsky},\n    title = {Learning multiple layers of features from tiny images},\n    institution = {},\n    year = {2009}\n}\n```\n\n### Contributions\n\nThanks to [@czabo](https://github.com/czabo) for adding this dataset.",
+              "extracted_code": "from datasets import load_dataset\n\ndata = load_dataset(\"cifar10\")"
+            }
+          ]
+        }
+      }
     }
   },
   "idea_info_history": [
